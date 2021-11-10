@@ -2,6 +2,7 @@ package com.interview.pokemonapp.data.models
 
 
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 data class Attack(
     @SerializedName("convertedEnergyCost")
@@ -14,4 +15,4 @@ data class Attack(
     val name: String,
     @SerializedName("text")
     val text: String
-)
+): Serializable
