@@ -15,41 +15,6 @@ class PokemonViewModel(
 
     val pokemonList: MutableLiveData<Resource<PokemonResponse>> = MutableLiveData()
 
-//    fun getPokemonList(pageSize: Int) = viewModelScope.launch(Dispatchers.IO) {
-//        try {
-//            pokemonList.postValue(Resource.Loading())
-//            val apiResult = getPokemonList.execute(pageSize, null, null)
-//            pokemonList.postValue(apiResult)
-//        }
-//        catch (exception: Exception) {
-//            pokemonList.postValue(Resource.Error(exception.message.toString()))
-//        }
-//    }
-
-//    fun getPokemonListBySearch(pageSize: Int, searchQuery: String) =
-//        viewModelScope.launch(Dispatchers.IO) {
-//        try {
-//            pokemonList.postValue(Resource.Loading())
-//            val apiResult = getPokemonList.execute(pageSize, searchQuery, null)
-//            pokemonList.postValue(apiResult)
-//        }
-//        catch (exception: Exception) {
-//            pokemonList.postValue(Resource.Error(exception.message.toString()))
-//        }
-//    }
-//
-//    fun getPokemonListByOrder(pageSize: Int, orderBy: String) =
-//        viewModelScope.launch(Dispatchers.IO) {
-//        try {
-//            pokemonList.postValue(Resource.Loading())
-//            val apiResult = getPokemonList.execute(pageSize, null, orderBy)
-//            pokemonList.postValue(apiResult)
-//        }
-//        catch (exception: Exception) {
-//            pokemonList.postValue(Resource.Error(exception.message.toString()))
-//        }
-//    }
-//
     fun getPokemonList(pageSize: Int, searchQuery: String?, orderBy: String?) =
         viewModelScope.launch(Dispatchers.IO) {
         try {

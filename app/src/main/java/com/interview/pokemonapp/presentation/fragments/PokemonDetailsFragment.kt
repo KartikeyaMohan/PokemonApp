@@ -45,7 +45,12 @@ class PokemonDetailsFragment : Fragment() {
 
     private fun render() {
         binding.title.text = pokemon.name
-        binding.levelValue.text = pokemon.level
+        if (null != pokemon.level) {
+            binding.levelValue.text = pokemon.level
+        }
+        else {
+            binding.levelValue.text = "-"
+        }
         binding.hpValue.text = pokemon.hp
         Glide.with(binding.mainImage.context).load(pokemon.images?.large).into(binding.mainImage)
         binding.typesRecycler.apply {
@@ -67,7 +72,14 @@ class PokemonDetailsFragment : Fragment() {
             adapter = subTypeAdapter
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         }
-        subTypeAdapter.differ.submitList(pokemon.subtypes)
+        if (null != pokemon.subtypes) {
+            subTypeAdapter.differ.submitList(pokemon.subtypes)
+        }
+        else {
+            binding.subTypes.visibility = View.GONE
+            binding.subTypesRecycler.visibility = View.GONE
+            binding.dividerSix.visibility = View.GONE
+        }
         binding.resistancesRecycler.apply {
             adapter = resistancesAdapter
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
@@ -87,6 +99,11 @@ class PokemonDetailsFragment : Fragment() {
                 list.add(ability.name)
             }
         }
+        else {
+            binding.abilities.visibility = View.GONE
+            binding.abilitiesRecycler.visibility = View.GONE
+            binding.dividerFour.visibility = View.GONE
+        }
         return list
     }
 
@@ -96,6 +113,11 @@ class PokemonDetailsFragment : Fragment() {
             for (attack in attackList) {
                 list.add(attack.name)
             }
+        }
+        else {
+            binding.attacks.visibility = View.GONE
+            binding.attacksRecycler.visibility = View.GONE
+            binding.dividerFive.visibility = View.GONE
         }
         return list
     }
@@ -107,6 +129,11 @@ class PokemonDetailsFragment : Fragment() {
                 list.add(resistance.type.plus(" ").plus(resistance.value))
             }
         }
+        else {
+            binding.resistances.visibility = View.GONE
+            binding.resistancesRecycler.visibility = View.GONE
+            binding.dividerSeven.visibility = View.GONE
+        }
         return list
     }
 
@@ -116,6 +143,10 @@ class PokemonDetailsFragment : Fragment() {
             for (weaknesses in weaknessesList) {
                 list.add(weaknesses.type.plus(" ").plus(weaknesses.value))
             }
+        }
+        else {
+            binding.weaknesses.visibility = View.GONE
+            binding.weaknessesRecycler.visibility = View.GONE
         }
         return list
     }

@@ -50,7 +50,12 @@ class PokemonAdapter(private val onItemClickListener: OnItemClickListener): Recy
     inner class ViewHolder(val binding: PokemonListItemBinding): RecyclerView.ViewHolder(binding.root) {
         fun bind(data: Data, position: Int) {
             binding.pokemonName.text = data.name
-            binding.levelValue.text = data.level
+            if (null != data.level) {
+                binding.levelValue.text = data.level
+            }
+            else {
+                binding.levelValue.text = "-"
+            }
             binding.hpValue.text = data.hp
             Glide.with(binding.mainImage.context).load(data.images?.small).into(binding.mainImage)
             val tagAdapter = TagAdapter()

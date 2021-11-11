@@ -7,8 +7,7 @@
     <string name="types">Types</string>
     <string name="levels">Level</string>
     <string name="hp">HP</string>
-    <string name="not_available">Not Available</string>
-    
+    <string name="search_pokemon">Search Pokemon</string>
     <string name="abilities">Abilities</string>
     <string name="attacks">Attacks</string>
     <string name="sub_types">Sub Types</string>
