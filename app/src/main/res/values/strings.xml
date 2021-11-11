@@ -14,4 +14,5 @@
     <string name="sub_types">Sub Types</string>
     <string name="resistances">Resistances</string>
     <string name="weaknesses">Weaknesses</string>
+    <string name="default_error_message">Something went wrong</string>
 </resources>

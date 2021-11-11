@@ -1,11 +1,15 @@
 package com.interview.pokemonapp.presentation.fragments
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,6 +21,9 @@ import com.interview.pokemonapp.databinding.FragmentPokemonListBinding
 import com.interview.pokemonapp.presentation.adapters.PokemonAdapter
 import com.interview.pokemonapp.presentation.listeners.OnItemClickListener
 import com.interview.pokemonapp.presentation.viewModels.PokemonViewModel
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class PokemonListFragment : Fragment() {
 
@@ -26,6 +33,7 @@ class PokemonListFragment : Fragment() {
     private lateinit var onItemClickListener: OnItemClickListener
     private lateinit var pokemonAdapter: PokemonAdapter
     private var pokemonList: MutableList<Data> = mutableListOf()
+    private lateinit var searchQuery: String
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,6 +59,7 @@ class PokemonListFragment : Fragment() {
         }
         pokemonAdapter = PokemonAdapter(onItemClickListener)
         initRecyclerView()
+        initSearchView()
         getPokemonList()
     }
 
@@ -59,6 +68,60 @@ class PokemonListFragment : Fragment() {
             adapter = pokemonAdapter
             layoutManager = LinearLayoutManager(activity)
         }
+    }
+
+    private fun initSearchView() {
+        binding.searchView.setOnQueryTextListener(
+            object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(p0: String?): Boolean {
+                    searchQuery = "name:".plus(p0.toString()).plus("*")
+                    getPokemonListBySearch()
+                    return false
+                }
+
+                override fun onQueryTextChange(p0: String?): Boolean {
+                    MainScope().launch {
+                        delay(1000)
+                        searchQuery = "name:".plus(p0.toString()).plus("*")
+                        getPokemonListBySearch()
+                    }
+                    return false
+                }
+            }
+        )
+
+        binding.searchView.setOnCloseListener(object : SearchView.OnCloseListener {
+            override fun onClose(): Boolean {
+                initRecyclerView()
+                getPokemonList()
+                return false
+            }
+        })
+    }
+
+    private fun getPokemonListBySearch() {
+        viewModel.getPokemonListBySearch(20, searchQuery)
+        viewModel.searchedPokemon.observe(viewLifecycleOwner, { response ->
+            when(response) {
+                is Resource.Success -> {
+                    response.data?.let {
+                        pokemonList.addAll(it.data)
+                        pokemonAdapter.differ.submitList(it.data)
+                    }
+                    binding.progressBar.visibility = View.GONE
+                    binding.recyclerView.visibility = View.VISIBLE
+                }
+                is Resource.Loading -> {
+                    binding.recyclerView.visibility = View.GONE
+                    binding.progressBar.visibility = View.VISIBLE
+                }
+                is Resource.Error -> {
+                    binding.progressBar.visibility = View.GONE
+                    binding.recyclerView.visibility = View.GONE
+                    Toast.makeText(context, context?.resources?.getString(R.string.default_error_message), Toast.LENGTH_LONG).show()
+                }
+            }
+        })
     }
 
     private fun getPokemonList() {
@@ -70,11 +133,17 @@ class PokemonListFragment : Fragment() {
                         pokemonList.addAll(it.data)
                         pokemonAdapter.differ.submitList(it.data)
                     }
-                    Log.i(TAG, response.data.toString())
+                    binding.progressBar.visibility = View.GONE
+                    binding.recyclerView.visibility = View.VISIBLE
                 }
                 is Resource.Loading -> {
+                    binding.recyclerView.visibility = View.GONE
+                    binding.progressBar.visibility = View.VISIBLE
                 }
                 is Resource.Error -> {
+                    binding.progressBar.visibility = View.GONE
+                    binding.recyclerView.visibility = View.GONE
+                    Toast.makeText(context, context?.resources?.getString(R.string.default_error_message), Toast.LENGTH_LONG).show()
                 }
             }
         })

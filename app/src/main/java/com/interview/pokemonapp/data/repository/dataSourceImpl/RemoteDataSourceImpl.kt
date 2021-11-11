@@ -10,4 +10,11 @@ class RemoteDataSourceImpl(private val pokemonApiService: PokemonApiService): Re
     override suspend fun getPokemonList(pageSize: Int): Response<PokemonResponse> {
         return pokemonApiService.getPokemonList(pageSize)
     }
+
+    override suspend fun getPokemonListBySearch(
+        pageSize: Int,
+        searchQuery: String
+    ): Response<PokemonResponse> {
+        return pokemonApiService.getPokemonListBySearch(pageSize, searchQuery)
+    }
 }

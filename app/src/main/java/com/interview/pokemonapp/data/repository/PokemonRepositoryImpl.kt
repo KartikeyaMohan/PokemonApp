@@ -12,6 +12,13 @@ class PokemonRepositoryImpl(private val remoteDataSource: RemoteDataSource): Pok
         return responseToResource(remoteDataSource.getPokemonList(pageSize))
     }
 
+    override suspend fun getPokemonListBySearch(
+        pageSize: Int,
+        searchQuery: String
+    ): Resource<PokemonResponse> {
+        return responseToResource(remoteDataSource.getPokemonListBySearch(pageSize, searchQuery))
+    }
+
     private fun responseToResource(response: Response<PokemonResponse>): Resource<PokemonResponse> {
         if(response.isSuccessful) {
             response.body()?.let {
