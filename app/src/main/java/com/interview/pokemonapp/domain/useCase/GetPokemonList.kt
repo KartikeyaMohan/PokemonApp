@@ -6,7 +6,7 @@ import com.interview.pokemonapp.domain.repository.PokemonRepository
 
 class GetPokemonList(private val pokemonRepository: PokemonRepository) {
 
-    suspend fun execute(pageSize: Int): Resource<PokemonResponse> {
-        return pokemonRepository.getPokemonList(pageSize)
+    suspend fun execute(pageSize: Int, searchQuery: String?, orderBy: String?): Resource<PokemonResponse> {
+        return pokemonRepository.getPokemonList(pageSize, searchQuery, orderBy)
     }
 }

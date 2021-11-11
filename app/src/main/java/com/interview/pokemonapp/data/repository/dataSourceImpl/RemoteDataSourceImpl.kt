@@ -7,14 +7,11 @@ import retrofit2.Response
 
 class RemoteDataSourceImpl(private val pokemonApiService: PokemonApiService): RemoteDataSource {
 
-    override suspend fun getPokemonList(pageSize: Int): Response<PokemonResponse> {
-        return pokemonApiService.getPokemonList(pageSize)
-    }
-
-    override suspend fun getPokemonListBySearch(
+    override suspend fun getPokemonList(
         pageSize: Int,
-        searchQuery: String
+        searchQuery: String?,
+        orderBy: String?
     ): Response<PokemonResponse> {
-        return pokemonApiService.getPokemonListBySearch(pageSize, searchQuery)
+        return pokemonApiService.getPokemonList(pageSize, searchQuery, orderBy)
     }
 }

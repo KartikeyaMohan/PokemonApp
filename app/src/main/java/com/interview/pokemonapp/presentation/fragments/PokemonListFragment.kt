@@ -1,13 +1,16 @@
 package com.interview.pokemonapp.presentation.fragments
 
-import android.content.Context
+import android.app.Dialog
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
+import android.view.Window
+import android.widget.Button
+import android.widget.CheckBox
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
@@ -33,7 +36,8 @@ class PokemonListFragment : Fragment() {
     private lateinit var onItemClickListener: OnItemClickListener
     private lateinit var pokemonAdapter: PokemonAdapter
     private var pokemonList: MutableList<Data> = mutableListOf()
-    private lateinit var searchQuery: String
+    private var searchQuery: String? = null
+    private var orderBy: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,9 +62,50 @@ class PokemonListFragment : Fragment() {
             }
         }
         pokemonAdapter = PokemonAdapter(onItemClickListener)
+        addListeners()
         initRecyclerView()
         initSearchView()
         getPokemonList()
+    }
+
+    private fun addListeners() {
+        binding.filterList.setOnClickListener {
+            val dialog = Dialog(requireContext())
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+            dialog.setCancelable(false)
+            dialog.setContentView(R.layout.filter_dialog)
+            val orderByLevel: CheckBox = dialog.findViewById(R.id.level_order)
+            val orderByHp: CheckBox = dialog.findViewById(R.id.hp_order)
+            val apply: Button = dialog.findViewById(R.id.apply_filter)
+            val cancelButton: ImageView = dialog.findViewById(R.id.close_icon)
+            cancelButton.setOnClickListener {
+                if (dialog.isShowing) {
+                    dialog.dismiss()
+                }
+            }
+            apply.setOnClickListener {
+                orderBy = ""
+                if (orderByLevel.isChecked) {
+                    //Descending order of level
+                    orderBy = "-level"
+                }
+                if (orderByHp.isChecked) {
+                    //Descending order of HP
+                    orderBy = "-hp"
+                }
+                if (orderByLevel.isChecked && orderByHp.isChecked) {
+                    orderBy = "-level,-hp"
+                }
+                if (!orderByHp.isChecked && !orderByLevel.isChecked) {
+                    orderBy = null
+                }
+                if (dialog.isShowing) {
+                    dialog.dismiss()
+                }
+                getPokemonList()
+            }
+            dialog.show()
+        }
     }
 
     private fun initRecyclerView() {
@@ -74,58 +119,39 @@ class PokemonListFragment : Fragment() {
         binding.searchView.setOnQueryTextListener(
             object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(p0: String?): Boolean {
-                    searchQuery = "name:".plus(p0.toString()).plus("*")
-                    getPokemonListBySearch()
+                    searchQuery = "name:\"".plus(p0.toString()).plus("*\"")
+                    if (p0.toString().isEmpty()) {
+                        searchQuery = null
+                    }
+                    getPokemonList()
                     return false
                 }
 
                 override fun onQueryTextChange(p0: String?): Boolean {
                     MainScope().launch {
-                        delay(1000)
-                        searchQuery = "name:".plus(p0.toString()).plus("*")
-                        getPokemonListBySearch()
+                        delay(2000)
+                        searchQuery = "name:\"".plus(p0.toString()).plus("*\"")
+                        if (p0.toString().isEmpty()) {
+                            searchQuery = null
+                        }
+                        getPokemonList()
                     }
                     return false
                 }
             }
         )
 
-        binding.searchView.setOnCloseListener(object : SearchView.OnCloseListener {
-            override fun onClose(): Boolean {
-                initRecyclerView()
-                getPokemonList()
-                return false
-            }
-        })
-    }
-
-    private fun getPokemonListBySearch() {
-        viewModel.getPokemonListBySearch(20, searchQuery)
-        viewModel.searchedPokemon.observe(viewLifecycleOwner, { response ->
-            when(response) {
-                is Resource.Success -> {
-                    response.data?.let {
-                        pokemonList.addAll(it.data)
-                        pokemonAdapter.differ.submitList(it.data)
-                    }
-                    binding.progressBar.visibility = View.GONE
-                    binding.recyclerView.visibility = View.VISIBLE
-                }
-                is Resource.Loading -> {
-                    binding.recyclerView.visibility = View.GONE
-                    binding.progressBar.visibility = View.VISIBLE
-                }
-                is Resource.Error -> {
-                    binding.progressBar.visibility = View.GONE
-                    binding.recyclerView.visibility = View.GONE
-                    Toast.makeText(context, context?.resources?.getString(R.string.default_error_message), Toast.LENGTH_LONG).show()
-                }
-            }
-        })
+        binding.searchView.setOnCloseListener {
+            searchQuery = null
+            initRecyclerView()
+            getPokemonList()
+            false
+        }
     }
 
     private fun getPokemonList() {
-        viewModel.getPokemonList(20)
+        viewModel.getPokemonList(20, searchQuery, orderBy)
+        Log.i(TAG, "KMX:" + orderBy)
         viewModel.pokemonList.observe(viewLifecycleOwner, { response ->
             when(response) {
                 is Resource.Success -> {

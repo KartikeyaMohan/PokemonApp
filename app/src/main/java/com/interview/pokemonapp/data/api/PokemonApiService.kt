@@ -9,12 +9,8 @@ interface PokemonApiService {
 
     @GET("v2/cards")
     suspend fun getPokemonList(
-        @Query("pageSize") pageSize: Int
-    ): Response<PokemonResponse>
-
-    @GET("v2/cards")
-    suspend fun getPokemonListBySearch(
         @Query("pageSize") pageSize: Int,
-        @Query("q") q: String
+        @Query("q") q: String? = null,
+        @Query("orderBy") orderBy: String? = null
     ): Response<PokemonResponse>
 }

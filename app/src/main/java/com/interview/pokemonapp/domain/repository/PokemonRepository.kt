@@ -5,7 +5,5 @@ import com.interview.pokemonapp.data.utils.Resource
 import retrofit2.Response
 
 interface PokemonRepository {
-
-    suspend fun getPokemonList(pageSize: Int): Resource<PokemonResponse>
-    suspend fun getPokemonListBySearch(pageSize: Int, searchQuery: String): Resource<PokemonResponse>
+    suspend fun getPokemonList(pageSize: Int, searchQuery: String?, orderBy: String?): Resource<PokemonResponse>
 }

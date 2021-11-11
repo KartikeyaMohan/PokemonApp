@@ -15,4 +15,6 @@
     <string name="resistances">Resistances</string>
     <string name="weaknesses">Weaknesses</string>
     <string name="default_error_message">Something went wrong</string>
+    <string name="close_icon">Close Icon</string>
+    <string name="apply">Apply</string>
 </resources>

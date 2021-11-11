@@ -4,6 +4,5 @@ import com.interview.pokemonapp.data.models.PokemonResponse
 import retrofit2.Response
 
 interface RemoteDataSource {
-    suspend fun getPokemonList(pageSize: Int): Response<PokemonResponse>
-    suspend fun getPokemonListBySearch(pageSize: Int, searchQuery: String): Response<PokemonResponse>
+    suspend fun getPokemonList(pageSize: Int, searchQuery: String?, orderBy: String?): Response<PokemonResponse>
 }
